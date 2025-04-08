@@ -1,0 +1,141 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 1,
+    "passes": 1,
+    "pending": 0,
+    "failures": 0,
+    "start": "2025-04-08T16:04:18.282Z",
+    "end": "2025-04-08T16:04:43.211Z",
+    "duration": 24929,
+    "testsRegistered": 1,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "61a3ba6d-07bf-4477-a69f-8332176c2c33",
+      "title": "",
+      "fullFile": "F:\\Software Development\\JavasScript\\Selenium IDE\\RoutePlanner\\tests\\routeTest.js",
+      "file": "\\tests\\routeTest.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "5a75de8a-c6aa-4056-be57-49f46278567e",
+          "title": "Google Maps Route Planner Test",
+          "fullFile": "F:\\Software Development\\JavasScript\\Selenium IDE\\RoutePlanner\\tests\\routeTest.js",
+          "file": "\\tests\\routeTest.js",
+          "beforeHooks": [
+            {
+              "title": "\"before all\" hook in \"Google Maps Route Planner Test\"",
+              "fullTitle": "Google Maps Route Planner Test \"before all\" hook in \"Google Maps Route Planner Test\"",
+              "timedOut": null,
+              "duration": 1198,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": null,
+              "context": null,
+              "code": "driver = await new Builder().forBrowser('chrome').build();",
+              "err": {},
+              "uuid": "c9a800ed-a508-4121-8a05-288a084dfaf7",
+              "parentUUID": null,
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "afterHooks": [
+            {
+              "title": "\"after all\" hook in \"Google Maps Route Planner Test\"",
+              "fullTitle": "Google Maps Route Planner Test \"after all\" hook in \"Google Maps Route Planner Test\"",
+              "timedOut": null,
+              "duration": 72,
+              "state": null,
+              "speed": null,
+              "pass": false,
+              "fail": false,
+              "pending": null,
+              "context": null,
+              "code": "await driver.quit();",
+              "err": {},
+              "uuid": "7f14dce3-c666-4ae3-8d0d-792a59f7a4e4",
+              "parentUUID": null,
+              "isHook": true,
+              "skipped": false
+            }
+          ],
+          "tests": [
+            {
+              "title": "should create a route in Google Maps",
+              "fullTitle": "Google Maps Route Planner Test should create a route in Google Maps",
+              "timedOut": null,
+              "duration": 23284,
+              "state": "passed",
+              "speed": "slow",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "const pointsOfInterest = [\n    { name: 'Katedra', coordinates: '54.6851059,25.2865151' },\n    { name: 'Prezidentūra', coordinates: '54.6838342,25.2865345' },\n    { name: 'VU', coordinates: '54.6831931,25.2868054' },\n    { name: 'Alumnatas', coordinates: '54.6820794,25.2862603' },\n    { name: 'Rotušė', coordinates: '54.6784913,25.2871451' },\n    { name: 'Bazilijonų vartai', coordinates: '54.6759772,25.2884315' },\n    { name: 'Šv. Dvasios cerkvė', coordinates: '54.6755994,25.2899818' },\n    { name: 'Aušros vartai', coordinates: '54.6746027,25.2894384' }\n];\nif (pointsOfInterest.length < 3) {\n    throw new Error('Error: At least 3 points of interest are required to create a route.');\n}\n// Allow tester to choose between coordinates or names\nconst useCoordinates = true; // Set to false to use names instead of coordinates\n// Navigate to Google Maps\nawait driver.get('https://www.google.com/maps');\n// first page is loaded for google consent\nconst rejectAllButton = await driver.wait(until.elementLocated(By.css('button[aria-label=\"Atmesti viską\"]')), 10000);\nawait rejectAllButton.click();\nawait driver.sleep(quickSleep); // Wait for the button to be clicked\n// Wait for the search box to load\nconst searchBoxContainer = await driver.wait(until.elementLocated(By.id('searchbox')), 10000);\nconst searchBox = await searchBoxContainer.findElement(By.css('input'));\nawait searchBox.sendKeys(pointsOfInterest[0].coordinates, Key.RETURN);\nawait driver.sleep(quickSleep);\nconst directionsButton = await driver.findElement(By.css('button[aria-label=\"Nuorodos\"]'));\nawait directionsButton.click();\nawait driver.sleep(quickSleep);\n// select \"Walking\" as the mode of transportation (Pėsčiomis)\nconst walkingButton = await driver.findElement(By.css('div[aria-label=\"Pėsčiomis\"]'));\nawait walkingButton.click();\nawait driver.sleep(quickSleep);\n// find this div \"Sukeisti pradžios tašką su kelionės tikslu\" and then click it's button\nconst swapButton = await driver.findElement(By.css('button[aria-label=\"Sukeisti pradžios tašką su kelionės tikslu\"]'));\nawait swapButton.click();\nawait driver.sleep(quickSleep);\n// find this div \"directions-searchbox-1\" and add first point of interest to it's input field\nconst destinationBox = await driver.findElement(By.id('directions-searchbox-1'));\nconst destinationInput = await destinationBox.findElement(By.css('input'));\nawait destinationInput.clear(); // Clear the input field\nawait destinationInput.sendKeys(pointsOfInterest[1].coordinates, Key.RETURN);\nawait driver.sleep(quickSleep);\n// Add points of interest to the route\nfor (const point of pointsOfInterest.slice(2)) { // Skip the first two points\n    // find span with text \"Pridėti kelionės tikslą\" and click it\n    const addDestinationButton = await driver.findElement(By.xpath(\"//span[text()='Pridėti kelionės tikslą']/ancestor::button\"));\n    await addDestinationButton.click();\n    await driver.sleep(quickSleep);\n    const destinationBox = await driver.findElement(By.id('directions-searchbox-' + (pointsOfInterest.indexOf(point))));\n    const destinationInput = await destinationBox.findElement(By.css('input'));\n    await destinationInput.clear(); // Clear the input field\n    // Use coordinates or names based on tester's choice\n    const inputValue = useCoordinates ? point.coordinates : point.name;\n    await destinationInput.sendKeys(inputValue, Key.RETURN);\n    await driver.sleep(quickSleep);\n}\nconsole.log('Maršrutas sėkmingai sukurtas „Google“ žemėlapiuose.');",
+              "err": {},
+              "uuid": "e264d021-e22a-4d59-a121-cab1e9982099",
+              "parentUUID": null,
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "e264d021-e22a-4d59-a121-cab1e9982099"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 23284,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": null
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 0
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "11.1.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "testReports",
+        "": true
+      },
+      "version": "6.2.0"
+    }
+  }
+}
