@@ -30,57 +30,58 @@ describe('Google Maps Route Planner Test', function () {
             throw new Error('Error: At least 3 points of interest are required to create a route.');
         }
 
-        // Allow tester to choose between coordinates or names
-        const useCoordinates = true; // Set to false to use names instead of coordinates
+        // Choice between coordinates or names
+        const useCoordinates = true;
 
-        // Navigate to Google Maps
+        // Open Google Maps
         await driver.get('https://www.google.com/maps');
 
-        // first page is loaded for google consent
+        // First page is loaded for google consent
         const rejectAllButton = await driver.wait(until.elementLocated(By.css('button[aria-label="Atmesti viską"]')), 10000);
         await rejectAllButton.click();
-        await driver.sleep(quickSleep); // Wait for the button to be clicked
+        await driver.sleep(quickSleep);
 
-        // Wait for the search box to load
+        // SearchBox
         const searchBoxContainer = await driver.wait(until.elementLocated(By.id('searchbox')), 10000);
         const searchBox = await searchBoxContainer.findElement(By.css('input'));
 
         await searchBox.sendKeys(pointsOfInterest[0].coordinates, Key.RETURN);
         await driver.sleep(quickSleep);
 
+        // Directions
         const directionsButton = await driver.findElement(By.css('button[aria-label="Nuorodos"]'));
         await directionsButton.click();
         await driver.sleep(quickSleep);
 
-        // select "Walking" as the mode of transportation (Pėsčiomis)
+        // Select "Walking" (Pėsčiomis)
         const walkingButton = await driver.findElement(By.css('div[aria-label="Pėsčiomis"]'));
         await walkingButton.click();
         await driver.sleep(quickSleep);
 
-        // find this div "Sukeisti pradžios tašką su kelionės tikslu" and then click it's button
+        // Button "Sukeisti pradžios tašką su kelionės tikslu"
         const swapButton = await driver.findElement(By.css('button[aria-label="Sukeisti pradžios tašką su kelionės tikslu"]'));
         await swapButton.click();
         await driver.sleep(quickSleep);
 
-        // find this div "directions-searchbox-1" and add first point of interest to it's input field
+        // Find div "directions-searchbox-1" and add first point of interest to it's input field
         const destinationBox = await driver.findElement(By.id('directions-searchbox-1'));
         const destinationInput = await destinationBox.findElement(By.css('input'));
-        await destinationInput.clear(); // Clear the input field
+        await destinationInput.clear();
         await destinationInput.sendKeys(pointsOfInterest[1].coordinates, Key.RETURN);
         await driver.sleep(quickSleep);
 
         // Add points of interest to the route
         for (const point of pointsOfInterest.slice(2)) { // Skip the first two points
-            // find span with text "Pridėti kelionės tikslą" and click it
+            // Find span with text "Pridėti kelionės tikslą"
             const addDestinationButton = await driver.findElement(By.xpath("//span[text()='Pridėti kelionės tikslą']/ancestor::button"));
             await addDestinationButton.click();
             await driver.sleep(quickSleep);
 
             const destinationBox = await driver.findElement(By.id('directions-searchbox-' + (pointsOfInterest.indexOf(point))));
             const destinationInput = await destinationBox.findElement(By.css('input'));
-            await destinationInput.clear(); // Clear the input field
+            await destinationInput.clear();
 
-            // Use coordinates or names based on tester's choice
+            // Use coordinates or names
             const inputValue = useCoordinates ? point.coordinates : point.name;
             await destinationInput.sendKeys(inputValue, Key.RETURN);
             await driver.sleep(quickSleep);
